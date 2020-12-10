@@ -26,9 +26,18 @@ class _SignInViewState extends State<SignInView> {
       _loading = true;
     });
     Request.getUser().whenComplete(() {
-      isLoggedIn = true;
-      Navigator.pushNamedAndRemoveUntil(
-          context, 'app', ModalRoute.withName('/'));
+      if (user.companyId != null) {
+        isLoggedIn = true;
+        Navigator.pushNamedAndRemoveUntil(
+            context, 'app', ModalRoute.withName('/'));
+      } else {
+        Auth0API.disconnect().whenComplete(() {
+          setState(() {
+            _error = 'Connectez-vous avec un compte entreprise';
+            _loading = false;
+          });
+        });
+      }
     });
   }
 

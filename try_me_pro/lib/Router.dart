@@ -5,6 +5,7 @@ import 'package:fluro/fluro.dart';
 import 'package:tryme/App.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
+import 'package:tryme/views/ProductEditView.dart';
 import 'package:tryme/views/ProductView.dart';
 import 'package:tryme/views/SearchResultView.dart';
 import 'package:tryme/views/SignInView.dart';
@@ -26,6 +27,9 @@ class MyRouter {
   static Handler _productHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           ProductView(id: params['id'][0]));
+  static Handler _productEditHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          ProductEditView(id: params['id'][0]));
   static Handler _searchResultHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           SearchResultView(
@@ -59,6 +63,11 @@ class MyRouter {
     router.define(
       'product/:id',
       handler: _productHandler,
+      transitionType: TransitionType.cupertino,
+    );
+    router.define(
+      'productEdit/:id',
+      handler: _productEditHandler,
       transitionType: TransitionType.cupertino,
     );
     router.define(

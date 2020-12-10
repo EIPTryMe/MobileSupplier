@@ -52,7 +52,6 @@ class QueryParse {
         if (element['description'] != null)
           review.description = element['description'];
         product.reviews.reviews.add(review);
-        print(review.user);
       });
     }
     if (result['reviews_aggregate'] != null &&

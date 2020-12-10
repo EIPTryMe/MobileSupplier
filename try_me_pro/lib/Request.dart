@@ -112,8 +112,10 @@ class Request {
 
   static Future<Product> getProduct(int id) async {
     Product product = Product();
-    QueryOptions queryOption =
-        QueryOptions(documentNode: gql(Queries.product(id)));
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Queries.product(id)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     if (result.hasException) {
@@ -129,12 +131,14 @@ class Request {
       String keywords, FilterOptions filterOptions, String sort) async {
     ProductListData productList = ProductListData();
     QueryOptions queryOption = QueryOptions(
-        documentNode: gql(Queries.productsSearch(
-            keywords,
-            filterOptions.selectedCategory,
-            filterOptions.priceCurrent,
-            user.companyId,
-            sort)));
+      documentNode: gql(Queries.productsSearch(
+          keywords,
+          filterOptions.selectedCategory,
+          filterOptions.priceCurrent,
+          user.companyId,
+          sort)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
     QueryResult result = await client.value.query(queryOption);
 
     productList = QueryParse.getProductList(result.data);

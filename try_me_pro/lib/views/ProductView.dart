@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:progress_state_button/iconed_button.dart';
-import 'package:progress_state_button/progress_button.dart';
 import 'package:numberpicker/numberpicker.dart';
 
 import 'package:tryme/Globals.dart';
@@ -26,8 +24,6 @@ class _ProductViewState extends State<ProductView> {
   Product _product = Product();
   String _pricePerMonth = "";
   bool _loading = true;
-  int _duration = 1;
-  ButtonState _buttonState = ButtonState.idle;
 
   @override
   void initState() {
@@ -47,21 +43,6 @@ class _ProductViewState extends State<ProductView> {
           _loading = false;
         });
       });
-  }
-
-  void _showDialog() {
-    showDialog<int>(
-        context: context,
-        builder: (BuildContext context) {
-          return NumberPickerDialog.integer(
-            initialIntegerValue: _duration,
-            minValue: 1,
-            maxValue: 24,
-            title: Text("Durée de la location (mois)"),
-          );
-        }).then((value) {
-      if (value != null) setState(() => _duration = value);
-    });
   }
 
   Widget _carouselFullScreen({List images, int current}) {
@@ -276,7 +257,9 @@ class _ProductViewState extends State<ProductView> {
                           ),
                           SizedBox(height: 12.0),
                           Text(
-                            reviews[index].date.substring(0, reviews[index].date.indexOf('T')),
+                            reviews[index]
+                                .date
+                                .substring(0, reviews[index].date.indexOf('T')),
                             style: TextStyle(color: Styles.colors.unSelected),
                           ),
                           SizedBox(height: 12.0),
@@ -328,6 +311,7 @@ class _ProductViewState extends State<ProductView> {
       backgroundColor: Styles.colors.background,
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(
@@ -341,6 +325,26 @@ class _ProductViewState extends State<ProductView> {
                   _productInfo(),
                   Loading(active: _loading),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: 8.0,
+                  bottom: 12.0,
+                  right: Styles.mainHorizontalPadding,
+                  left: Styles.mainHorizontalPadding),
+              child: FlatButton(
+                height: 55,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0)),
+                color: Styles.colors.main,
+                onPressed: () {
+                  Navigator.pushNamed(context, 'productEdit/${widget.id}');
+                },
+                child: Text(
+                  "Modifier",
+                  style: TextStyle(color: Styles.colors.text),
+                ),
               ),
             ),
           ],

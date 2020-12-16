@@ -59,12 +59,14 @@ class UserAddress {
 class Review {
   Review(
       {this.date = "",
-      this.user = "",
+      this.userFirstName = "",
+      this.userName = "",
       this.score = 0.0,
       this.description = ""});
 
   String date;
-  String user;
+  String userFirstName;
+  String userName;
   double score;
   String description;
 }
@@ -128,8 +130,9 @@ class Order {
 }
 
 class Category {
-  Category({this.name = "", this.picture = ""});
+  Category({this.id = 0, this.name = "", this.picture = ""});
 
+  int id;
   String name;
   String picture;
 }

@@ -247,8 +247,9 @@ class _ProductViewState extends State<ProductView> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                reviews[index].user.isNotEmpty
-                                    ? '${reviews[index].user[0]}***${reviews[index].user[reviews[index].user.length - 1]}'
+                                reviews[index].userFirstName.isNotEmpty &&
+                                        reviews[index].userName.isNotEmpty
+                                    ? '${reviews[index].userFirstName} ${reviews[index].userName}'
                                     : '',
                                 style: TextStyle(color: Styles.colors.text),
                               ),

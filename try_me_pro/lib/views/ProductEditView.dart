@@ -24,6 +24,7 @@ class ProductEditView extends StatefulWidget {
 class _ProductEditViewState extends State<ProductEditView> {
   bool _gotData = false;
   Product _product = Product();
+  final _formKey = GlobalKey<FormState>();
   TextEditingController _titleController = TextEditingController();
   TextEditingController _brandController = TextEditingController();
   TextEditingController _monthPriceController = TextEditingController();
@@ -96,19 +97,26 @@ class _ProductEditViewState extends State<ProductEditView> {
             ),
             color: Colors.green.shade400)
       },
-      onPressed: () {
-        setState(() {
-          _buttonState = ButtonState.loading;
-        });
-        saveInfo().then((hasException) {
-          setState(() {
-            _buttonState =
-                hasException ? ButtonState.fail : ButtonState.success;
-            Navigator.pushNamedAndRemoveUntil(
-                context, 'app', ModalRoute.withName('/'));
-          });
-        });
-      },
+      onPressed: _gotData
+          ? () {
+              setState(() {
+                _buttonState = ButtonState.loading;
+              });
+              if (_formKey.currentState.validate())
+                saveInfo().then((hasException) {
+                  setState(() {
+                    _buttonState =
+                        hasException ? ButtonState.fail : ButtonState.success;
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, 'app', ModalRoute.withName('/'));
+                  });
+                });
+              else
+                setState(() {
+                  _buttonState = ButtonState.idle;
+                });
+            }
+          : null,
       state: _buttonState,
     );
   }
@@ -129,69 +137,93 @@ class _ProductEditViewState extends State<ProductEditView> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    ListView(
-                      children: [
-                        TextField(
-                          style: TextStyle(color: Styles.colors.text),
-                          decoration: InputDecoration(
-                              labelText: 'Titre',
-                              labelStyle: TextStyle(color: Styles.colors.text)),
-                          controller: _titleController,
-                        ),
-                        TextField(
-                          style: TextStyle(color: Styles.colors.text),
-                          decoration: InputDecoration(
-                              labelText: 'Marque',
-                              labelStyle: TextStyle(color: Styles.colors.text)),
-                          controller: _brandController,
-                        ),
-                        TextField(
-                          style: TextStyle(color: Styles.colors.text),
-                          decoration: InputDecoration(
-                              labelText: 'Prix/Mois',
-                              labelStyle: TextStyle(color: Styles.colors.text)),
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: true),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp("[0-9]"))
-                          ],
-                          controller: _monthPriceController,
-                        ),
-                        TextField(
-                          style: TextStyle(color: Styles.colors.text),
-                          decoration: InputDecoration(
-                              labelText: 'Stock',
-                              labelStyle: TextStyle(color: Styles.colors.text)),
-                          keyboardType:
-                              TextInputType.numberWithOptions(decimal: false),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp("[0-9]"))
-                          ],
-                          controller: _stockController,
-                        ),
-                        TextField(
-                          style: TextStyle(color: Styles.colors.text),
-                          decoration: InputDecoration(
-                              labelText: 'Description',
-                              labelStyle: TextStyle(color: Styles.colors.text)),
-                          maxLines: null,
-                          controller: _descriptionController,
-                        ),
-                      ],
+                    Form(
+                      key: _formKey,
+                      child: ListView(
+                        children: [
+                          TextFormField(
+                            style: TextStyle(color: Styles.colors.text),
+                            decoration: InputDecoration(
+                                labelText: 'Titre',
+                                labelStyle:
+                                    TextStyle(color: Styles.colors.text)),
+                            controller: _titleController,
+                            validator: (value) {
+                              if (value.isEmpty) return ("Champ vide");
+                              return (null);
+                            },
+                          ),
+                          TextFormField(
+                            style: TextStyle(color: Styles.colors.text),
+                            decoration: InputDecoration(
+                                labelText: 'Marque',
+                                labelStyle:
+                                    TextStyle(color: Styles.colors.text)),
+                            controller: _brandController,
+                            validator: (value) {
+                              if (value.isEmpty) return ("Champ vide");
+                              return (null);
+                            },
+                          ),
+                          TextFormField(
+                            style: TextStyle(color: Styles.colors.text),
+                            decoration: InputDecoration(
+                                labelText: 'Prix/Mois',
+                                labelStyle:
+                                    TextStyle(color: Styles.colors.text)),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: true),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp("[0-9]")),
+                              LengthLimitingTextInputFormatter(5),
+                            ],
+                            controller: _monthPriceController,
+                            validator: (value) {
+                              if (value.isEmpty) return ("Champ vide");
+                              return (null);
+                            },
+                          ),
+                          TextFormField(
+                            style: TextStyle(color: Styles.colors.text),
+                            decoration: InputDecoration(
+                                labelText: 'Stock',
+                                labelStyle:
+                                    TextStyle(color: Styles.colors.text)),
+                            keyboardType:
+                                TextInputType.numberWithOptions(decimal: false),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp("[0-9]")),
+                              LengthLimitingTextInputFormatter(5),
+                            ],
+                            controller: _stockController,
+                            validator: (value) {
+                              if (value.isEmpty) return ("Champ vide");
+                              return (null);
+                            },
+                          ),
+                          TextFormField(
+                            style: TextStyle(color: Styles.colors.text),
+                            decoration: InputDecoration(
+                                labelText: 'Description',
+                                labelStyle:
+                                    TextStyle(color: Styles.colors.text)),
+                            maxLines: null,
+                            controller: _descriptionController,
+                            validator: (value) {
+                              if (value.isEmpty) return ("Champ vide");
+                              return (null);
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                     Loading(active: _loading),
                   ],
                 ),
               ),
             ),
-            if (_gotData)
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 8.0,
-                    bottom: 12.0,
-                    right: Styles.mainHorizontalPadding,
-                    left: Styles.mainHorizontalPadding),
-              ),
             Padding(
               padding: const EdgeInsets.only(
                   top: 8.0,

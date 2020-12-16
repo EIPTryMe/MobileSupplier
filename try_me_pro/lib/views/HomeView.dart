@@ -129,20 +129,30 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-              left: Styles.mainHorizontalPadding,
-              right: Styles.mainHorizontalPadding,
-              bottom: 8.0),
-          child: SearchBar(
-            onSubmitted: (keywords) =>
-                Navigator.pushNamed(context, 'searchResult//$keywords'),
+    return Scaffold(
+      backgroundColor: Styles.colors.background,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+                left: Styles.mainHorizontalPadding,
+                right: Styles.mainHorizontalPadding,
+                bottom: 8.0),
+            child: SearchBar(
+              onSubmitted: (keywords) =>
+                  Navigator.pushNamed(context, 'searchResult//$keywords'),
+            ),
           ),
-        ),
-        _listCategories(),
-      ],
+          _listCategories(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Styles.colors.main,
+        onPressed: () {
+          Navigator.pushNamed(context, 'addProduct');
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }

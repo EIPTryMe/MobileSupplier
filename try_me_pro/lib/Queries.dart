@@ -45,8 +45,12 @@ class QueryParse {
       (result['reviews'] as List).forEach((element) {
         Review review = Review();
         if (element['created_at'] != null) review.date = element['created_at'];
-        if (element['user'] != null && element['user']['name'] != null)
-          review.user = element['user']['name'];
+        if (element['user'] != null) {
+          if (element['user']['name'] != null)
+            review.userName = element['user']['name'];
+          if (element['user']['first_name'] != null)
+            review.userFirstName = element['user']['first_name'];
+        }
         if (element['score'] != null)
           review.score = element['score'].toDouble();
         if (element['description'] != null)
@@ -119,6 +123,7 @@ class QueryParse {
   static void getCategories(List result) {
     result.forEach((element) {
       Category category = Category();
+      if (element['id'] != null) category.id = element['id'];
       if (element['name'] != null) category.name = element['name'];
       if (element['image'] != null) category.picture = element['image'];
       categories.add(category);
@@ -186,6 +191,22 @@ class Mutations {
     }
   }
   ''';
+
+  static String addProduct(
+          int companyId,
+          int categoryId,
+          String name,
+          String description,
+          double pricePerMonth,
+          String pictureUrl,
+          int stock) =>
+      '''
+  mutation {
+    createProduct(company_id: $companyId, category_id: $categoryId, name: "$name", description: "$description", price_per_month: $pricePerMonth, picture_url: "$pictureUrl", stock: $stock) {
+      id
+    }
+  }
+  ''';
 }
 
 class Queries {
@@ -205,6 +226,7 @@ class Queries {
         score
         user {
           name
+          first_name
         }
       }
       reviews_aggregate {
@@ -219,7 +241,7 @@ class Queries {
   ''';
 
   static String getKeywordsFilter(String keywords) =>
-      '_or: [{name: {_ilike: "%$keywords%"}}, {category: {name: {_ilike: "%$keywords%"}}}, {brand: {_ilike: "%$keywords%"}}]';
+      '_or: [{name: {_ilike: "%$keywords%"}}]';
 
   static String getCategoryFilter(String category) =>
       category.isNotEmpty ? 'category: {name: {_eq: "$category"}}' : '';
@@ -335,6 +357,7 @@ class Queries {
   static String categories(int companyId) => '''
   query {
     category(where: {products: {company: {id: {_eq: $companyId}}}}) {
+      id
       name
       image
     }

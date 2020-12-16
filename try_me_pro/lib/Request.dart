@@ -110,6 +110,23 @@ class Request {
     return (result.hasException);
   }
 
+  static Future<bool> addProduct(Product product, int categoryId) async {
+    QueryOptions queryOption = QueryOptions(
+      documentNode: gql(Mutations.addProduct(
+          user.companyId,
+          categoryId,
+          product.name,
+          product.description.replaceAll('\n', '\\n'),
+          product.pricePerMonth,
+          product.pictures.isNotEmpty ? product.pictures[0] : '',
+          product.stock)),
+      fetchPolicy: FetchPolicy.cacheAndNetwork,
+    );
+    QueryResult result = await client.value.query(queryOption);
+
+    return (result.hasException);
+  }
+
   static Future<Product> getProduct(int id) async {
     Product product = Product();
     QueryOptions queryOption = QueryOptions(

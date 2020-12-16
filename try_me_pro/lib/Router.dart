@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
 
 import 'package:tryme/App.dart';
+import 'package:tryme/views/AddProductView.dart';
 import 'package:tryme/views/LandingView.dart';
 import 'package:tryme/views/OrdersView.dart';
 import 'package:tryme/views/ProductEditView.dart';
@@ -18,6 +19,9 @@ class MyRouter {
   static Handler _appHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           App());
+  static Handler _addProductHandler = Handler(
+      handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
+          AddProductView());
   static Handler _landingHandler = Handler(
       handlerFunc: (BuildContext context, Map<String, dynamic> params) =>
           LandingView());
@@ -51,6 +55,11 @@ class MyRouter {
       transitionType: TransitionType.cupertino,
     );
     router.define(
+      'addProduct',
+      handler: _addProductHandler,
+      transitionType: TransitionType.cupertinoFullScreenDialog,
+    );
+    router.define(
       'landing',
       handler: _landingHandler,
       transitionType: TransitionType.cupertino,
@@ -68,7 +77,7 @@ class MyRouter {
     router.define(
       'productEdit/:id',
       handler: _productEditHandler,
-      transitionType: TransitionType.cupertino,
+      transitionType: TransitionType.cupertinoFullScreenDialog,
     );
     router.define(
       'searchResult/:category/:keywords',

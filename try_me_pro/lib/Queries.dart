@@ -103,20 +103,32 @@ class QueryParse {
 
   static Order getOrder(Map result) {
     Order order = Order();
-    List<Product> products = List();
 
     if (result['id'] != null) order.id = result['id'];
+    if (result['status'] != null) order.status = result['status'];
+    if (result['created_at'] != null) order.createdAt = result['created_at'];
+    if (result['address_line_1'] != null)
+      order.addressLine = result['address_line_1'];
+    if (result['address_postal_code'] != null)
+      order.addressPostalCode = result['address_postal_code'];
+    if (result['address_city'] != null)
+      order.addressCity = result['address_city'];
+    if (result['address_country'] != null)
+      order.addressCountry = result['address_country'];
 
-    (result['order_items'] as List).forEach((element) {
-      products.add(getProduct(element['product']));
+    if (result['order_items'] != null) {
+      (result['order_items'] as List).forEach((element) {
+        Cart cart = Cart();
+        if (element['quantity'] != null) cart.quantity = element['quantity'];
+        if (element['duration'] != null) cart.duration = element['duration'];
+        if (element['product'] != null)
+          cart.product = getProduct(element['product']);
+        order.carts.add(cart);
+      });
+    }
+    order.carts.forEach((cart) {
+      order.total += cart.product.pricePerMonth;
     });
-    order.products = products;
-    if (result['order_items_aggregate'] != null &&
-        result['order_items_aggregate']['aggregate'] != null &&
-        result['order_items_aggregate']['aggregate']['sum'] != null &&
-        result['order_items_aggregate']['aggregate']['sum']['price'] != null)
-      order.total = result['order_items_aggregate']['aggregate']['sum']['price']
-          .toDouble();
     return (order);
   }
 
@@ -300,21 +312,22 @@ class Queries {
   static String orders(int companyId) => '''
   query {
     order(where: {order_items: {product: {company_id: {_eq: $companyId}}}}, order_by: {created_at: desc}) {
+      id
+      status
+      created_at
+      address_line_1
+      address_postal_code
+      address_city
+      address_country
       order_items(where: {product: {company_id: {_eq: $companyId}}}) {
+        quantity
+        duration
         product {
           id
           name
           description
           price_per_month
           picture_url
-        }
-      }
-      id
-      order_items_aggregate {
-        aggregate {
-          sum {
-            price
-          }
         }
       }
     }

@@ -33,27 +33,27 @@ class _OrdersViewState extends State<OrdersView> {
     });
   }
 
-  Widget _productCard({Product product}) {
+  Widget _productCard({Cart cart}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
         children: [
           Container(
-            height: 120,
+            height: 90,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
-                  width: 100,
+                  width: 80,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(Styles.cardRadius),
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(Styles.cardRadius),
-                    child: product.pictures.isNotEmpty
+                    child: cart.product.pictures.isNotEmpty
                         ? Image(
-                            image: NetworkImage(product.pictures[0]),
+                            image: NetworkImage(cart.product.pictures[0]),
                             fit: BoxFit.contain,
                           )
                         : null,
@@ -63,39 +63,52 @@ class _OrdersViewState extends State<OrdersView> {
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: Text(
-                            product.name,
-                            style: TextStyle(color: Styles.colors.text),
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                        Text(
+                          cart.product.name,
+                          style: TextStyle(color: Styles.colors.text),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Expanded(
-                          flex: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 4.0),
-                            child: Text(
-                              product.description,
-                              style: TextStyle(
-                                  color: Styles.colors.unSelected,
-                                  fontSize: 10),
-                              overflow: TextOverflow.fade,
+                        Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Durée de location: ',
+                                  style: TextStyle(
+                                    color: Styles.colors.unSelected,
+                                  ),
+                                ),
+                                Text(
+                                  '${cart.duration} mois',
+                                  style: TextStyle(
+                                    color: Styles.colors.text,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                              '${NumberFormatTool.formatPrice(product.pricePerMonth)}€ / mois',
-                              style: TextStyle(
-                                color: Styles.colors.text,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Prix / mois: ',
+                                  style: TextStyle(
+                                    color: Styles.colors.unSelected,
+                                  ),
+                                ),
+                                Text(
+                                  '${NumberFormatTool.formatPrice(cart.product.pricePerMonth)}€',
+                                  style: TextStyle(
+                                    color: Styles.colors.text,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),
@@ -110,12 +123,151 @@ class _OrdersViewState extends State<OrdersView> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(Styles.cardRadius),
                 onTap: () =>
-                    Navigator.pushNamed(context, 'product/${product.id}'),
+                    Navigator.pushNamed(context, 'product/${cart.product.id}'),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _orderCardHeader({Order order}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: Container(
+              height: 55,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: order.carts.isNotEmpty &&
+                        order.carts.first.product.pictures.isNotEmpty
+                    ? Image(
+                        image:
+                            NetworkImage(order.carts.first.product.pictures[0]),
+                        fit: BoxFit.contain,
+                      )
+                    : null,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 4,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Status: ',
+                    style: TextStyle(
+                      color: Styles.colors.unSelected,
+                    ),
+                  ),
+                  Text(
+                    '${order.status}',
+                    style: TextStyle(
+                      color: order.status == "Paiement validé"
+                          ? Colors.green
+                          : order.status == "En attente de paiement"
+                              ? Colors.red
+                              : order.status == "Commande remboursée"
+                                  ? Colors.white54
+                                  : Styles.colors.text,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Commande: ',
+                    style: TextStyle(
+                      color: Styles.colors.unSelected,
+                    ),
+                  ),
+                  Text(
+                    '${order.id}',
+                    style: TextStyle(
+                      color: Styles.colors.text,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Date: ',
+                    style: TextStyle(
+                      color: Styles.colors.unSelected,
+                    ),
+                  ),
+                  Text(
+                    '${order.createdAt.substring(0, order.createdAt.indexOf('T'))}',
+                    style: TextStyle(
+                      color: Styles.colors.text,
+                    ),
+                  ),
+                ],
+              ),
+              Divider(height: 10),
+              Text(
+                '${order.addressLine}, ${order.addressPostalCode} ${order.addressCity}, ${order.addressCountry}',
+                style: TextStyle(
+                  color: Styles.colors.text,
+                ),
+              ),
+              Divider(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Quantité: ',
+                    style: TextStyle(
+                      color: Styles.colors.unSelected,
+                    ),
+                  ),
+                  Text(
+                    '${order.carts.length}',
+                    style: TextStyle(
+                      color: Styles.colors.text,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Prix total / mois: ',
+                    style: TextStyle(
+                      color: Styles.colors.unSelected,
+                    ),
+                  ),
+                  Text(
+                    '${NumberFormatTool.formatPrice(order.total)}€',
+                    style: TextStyle(
+                      color: Styles.colors.text,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -131,54 +283,7 @@ class _OrdersViewState extends State<OrdersView> {
           padding: const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 16.0),
-                      child: Container(
-                        height: 55,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12.0),
-                          child: order.products.isNotEmpty &&
-                                  order.products.first.pictures.isNotEmpty
-                              ? Image(
-                                  image: NetworkImage(
-                                      order.products.first.pictures[0]),
-                                  fit: BoxFit.contain,
-                                )
-                              : null,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Commande: ${order.id}',
-                          style: TextStyle(
-                            color: Styles.colors.text,
-                          ),
-                        ),
-                        Text(
-                          'Total: ${NumberFormatTool.formatPrice(order.total)}€ / mois',
-                          style: TextStyle(
-                            color: Styles.colors.text,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              _orderCardHeader(order: order),
               ExpandChild(
                 arrowPadding: const EdgeInsets.all(0.0),
                 arrowColor: Styles.colors.background,
@@ -193,8 +298,8 @@ class _OrdersViewState extends State<OrdersView> {
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: order.products
-                          .map((product) => _productCard(product: product))
+                      children: order.carts
+                          .map((cart) => _productCard(cart: cart))
                           .toList(),
                     ),
                   ],

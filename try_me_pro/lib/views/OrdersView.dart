@@ -133,6 +133,8 @@ class _OrdersViewState extends State<OrdersView> {
   }
 
   Widget _orderCardHeader({Order order}) {
+    if (order.status == "En attente de paiement")
+      order.status = "Paiement validé";
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

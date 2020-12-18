@@ -127,7 +127,7 @@ class QueryParse {
       });
     }
     order.carts.forEach((cart) {
-      order.total += cart.product.pricePerMonth;
+      order.total += cart.product.pricePerMonth * cart.quantity;
     });
     return (order);
   }

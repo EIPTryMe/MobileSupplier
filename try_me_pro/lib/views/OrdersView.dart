@@ -83,7 +83,7 @@ class _OrdersViewState extends State<OrdersView> {
                                   ),
                                 ),
                                 Text(
-                                  '${cart.duration} mois',
+                                  '${cart.duration} mois [x${cart.quantity}]',
                                   style: TextStyle(
                                     color: Styles.colors.text,
                                   ),
@@ -235,7 +235,7 @@ class _OrdersViewState extends State<OrdersView> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Quantité: ',
+                    'Articles: ',
                     style: TextStyle(
                       color: Styles.colors.unSelected,
                     ),
